@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.nms.experimental</groupId>
+    <artifactId>cresco-db-testbed</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdk>1.8</jdk>
+         <maven.compiler.source>1.8</maven.compiler.source>
+         <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.version>3.5.1</maven.compiler.version>
+        <activemq.version>5.15.4</activemq.version>
+        <orientdb.version>2.2.36</orientdb.version>
+        <gson.version>2.8.5</gson.version>
+        <project.basedir>home/nima/code/IdeaProjects/crescodbtestbed</project.basedir>
+    </properties>
+    <repositories>
+        <repository>
+            <id>localrepo</id>
+            <url>file://${project.basedir}/localrepo</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.jhades/jhades -->
+        <!--<dependency>
+            <groupId>org.jhades</groupId>
+            <artifactId>jhades</artifactId>
+            <version>1.0.4</version>
+        </dependency>-->
+
+        <!-- OrientDB -->
+
+        <!-- Embedded: 1. core 2. graphdb -->
+        <!-- Stand Alone: 1. graphdb 2. core -->
+
+        <!-- https://mvnrepository.com/artifact/com.orientechnologies/orientdb-client -->
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-client</artifactId>
+            <version>${orientdb.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-server</artifactId>
+            <version>${orientdb.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-tools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-tools</artifactId>
+            <version>${orientdb.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-server</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-tools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-graphdb</artifactId>
+            <version>${orientdb.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-server</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-tools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.orientechnologies</groupId>
+                    <artifactId>orientdb-core</artifactId>
+                </exclusion>
+            </exclusions>
+
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-core</artifactId>
+            <version>${orientdb.version}</version>
+            <!--NMS 2018-07-20 Had to remove this to fix a runtime ClassNotFound exception. -->
+            <!--<exclusions>
+                <exclusion>
+                    <groupId>net.java.dev.jna</groupId>
+                    <artifactId>jna-platform</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.java.dev.jna</groupId>
+                    <artifactId>jna</artifactId>
+                </exclusion>
+            </exclusions>-->
+        </dependency>
+
+
+        <dependency>
+            <groupId>io.cresco</groupId>
+            <artifactId>library</artifactId>
+            <version>1.0-SNAPSHOT</version>
+
+        </dependency>
+        <dependency>
+            <groupId>io.cresco</groupId>
+            <artifactId>controller</artifactId>
+            <version>1.0-SNAPSHOT</version>
+
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+    </dependencies>
+
+    <!-- NOPE -->
+    <!--<build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.5.1</version>
+                <extensions>true</extensions>
+                <configuration>
+
+                    <instructions>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>Cresco DB Testbed</Bundle-Name>
+                        <Bundle-Description>Testbed to evaluate changes to the Cresco DB</Bundle-Description>
+                        <Bundle-Vendor>Cresco.io</Bundle-Vendor>
+                        <Bundle-Version>${project.version}-${maven.build.timestamp}</Bundle-Version>
+                        <Bundle-Activator>org.nms.crescodbtest.Main</Bundle-Activator>
+                        <Import-Package>org.osgi.service.cm.ConfigurationAdmin;*;resolution:=optional</Import-Package>
+                        <Embed-Dependency>!org.osgi.*;!osgi.cmpn.*;!library;*</Embed-Dependency>
+                        <Export-Package>
+                        </Export-Package>
+                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>-->
+</project>
