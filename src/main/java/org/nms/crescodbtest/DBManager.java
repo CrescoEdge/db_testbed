@@ -19,7 +19,7 @@ public class DBManager implements Runnable  {
 	public DBManager(ControllerEngine controllerEngine, BlockingQueue<String> importQueue) {
 		this.controllerEngine = controllerEngine;
 		this.plugin = controllerEngine.getPluginBuilder();
-		this.logger = plugin.getLogger(DBManager.class.getName(),CLogger.Level.Info);
+		this.logger = plugin.getLogger(DBManager.class.getName(),CLogger.Level.Debug);
 
 
 		//importQueue = new LinkedBlockingQueue<>();

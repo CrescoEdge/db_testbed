@@ -13,10 +13,11 @@ public class ControllerEngine {
     private KPIProducer kpip;
     private Boolean DBManagerActive;
     private DBInterface gdb;
+    private PluginAdmin pluginAdmin;
 
-    public ControllerEngine(PluginBuilder plugin){
+    public ControllerEngine(PluginBuilder plugin,PluginAdmin plugin_admin){
         this.pluginBuilder = plugin;
-
+        this.pluginAdmin = plugin_admin;
     }
 
     public DBInterface getGDB(){
@@ -49,5 +50,9 @@ public class ControllerEngine {
 
     public void startGDB(){
         gdb = new DBInterface(this);
+    }
+
+    public PluginAdmin getPluginAdmin(){
+        return this.pluginAdmin;
     }
 }

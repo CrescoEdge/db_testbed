@@ -42,7 +42,7 @@ public class DBApplicationFunctions {
     public DBApplicationFunctions(ControllerEngine controllerEngine, DBEngine dbe) {
         this.controllerEngine = controllerEngine;
         this.plugin = controllerEngine.getPluginBuilder();
-        this.logger = plugin.getLogger(DBApplicationFunctions.class.getName(),CLogger.Level.Info);
+        this.logger = plugin.getLogger(DBApplicationFunctions.class.getName(),CLogger.Level.Debug);
 
         //this.logger = new CLogger(DBApplicationFunctions.class, agentcontroller.getMsgOutQueue(), agentcontroller.getRegion(), agentcontroller.getAgent(), agentcontroller.getPluginID(), CLogger.Level.Info);
         //this.agentcontroller = agentcontroller;

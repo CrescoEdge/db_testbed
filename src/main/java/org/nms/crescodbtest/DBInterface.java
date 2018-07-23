@@ -38,7 +38,7 @@ public class DBInterface {
     public DBInterface(ControllerEngine controllerEngine) {
         this.controllerEngine = controllerEngine;
         this.plugin = controllerEngine.getPluginBuilder();
-        this.logger = plugin.getLogger(DBInterface.class.getName(),CLogger.Level.Trace);
+        this.logger = plugin.getLogger(DBInterface.class.getName(),CLogger.Level.Debug);
 
         //this.logger = new CLogger(DBInterface.class, agentcontroller.getMsgOutQueue(), agentcontroller.getRegion(), agentcontroller.getAgent(), agentcontroller.getPluginID(), CLogger.Level.Info);
         //this.agentcontroller = agentcontroller;
@@ -237,6 +237,10 @@ public class DBInterface {
                         List<String> pluginList = gdb.getNodeList(region, agent, null);
                         regionMap.put("name", agent);
                         regionMap.put("region", region);
+/*                        if(pluginList == null){
+                            logger.debug("NPE incoming!");
+                            //nothing}
+                        }*/
                         regionMap.put("plugins", String.valueOf(pluginList.size()));
                         //TODO there must be a better way to do this
                         try {
@@ -259,7 +263,8 @@ public class DBInterface {
         }
         catch(Exception ex)
         {
-            logger.error("getAgentList() " + ex.toString());
+            logger.error("Agent= "+plugin.getAgent() +"getAgentList() " + ex.toString());
+
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);

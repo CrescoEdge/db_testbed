@@ -26,7 +26,7 @@ public class DBEngine {
 
         this.controllerEngine = controllerEngine;
         this.plugin = controllerEngine.getPluginBuilder();
-        this.logger = plugin.getLogger(DBEngine.class.getName(),CLogger.Level.Info);
+        this.logger = plugin.getLogger(DBEngine.class.getName(),CLogger.Level.Debug);
 
         //this.agentcontroller = agentcontroller;
         //logger = new CLogger(DBEngine.class, agentcontroller.getMsgOutQueue(), agentcontroller.getRegion(), agentcontroller.getAgent(), agentcontroller.getPluginID(), CLogger.Level.Info);

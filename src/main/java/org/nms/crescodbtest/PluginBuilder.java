@@ -12,15 +12,13 @@ import java.util.Map;
 public class PluginBuilder {
     private String agent;
     private String region;
-    private String pluginID;
     private String baseClassName;
     private Gson gson = new Gson();
     private Config pluginConfig;
 
-    public PluginBuilder (String agent,String region,String pluginID,String baseClassName,Map<String,Object>pluginConfigMap){
+    public PluginBuilder (String agent,String region,String baseClassName,Map<String,Object>pluginConfigMap){
         this.agent = agent;
         this.region = region;
-        this.pluginID = pluginID;
         this.baseClassName = baseClassName;
         this.pluginConfig = new Config(pluginConfigMap);
     }
@@ -30,6 +28,10 @@ public class PluginBuilder {
     }
     public MsgEvent getGlobalPluginMsgEvent(MsgEvent.Type type, String dstRegion, String dstAgent, String dstPlugin) {
         return this.getMsgEvent(type, dstRegion, dstAgent, dstPlugin, false, false);
+    }
+
+    public MsgEvent getRegionalControllerMsgEvent(MsgEvent.Type type) {
+        return this.getMsgEvent(type, this.getRegion(), this.getAgent(), (String)null, true, false);
     }
 
     private MsgEvent getMsgEvent(MsgEvent.Type type, String dstRegion, String dstAgent, String dstPlugin, boolean isRegional, boolean isGlobal) {
@@ -60,7 +62,7 @@ public class PluginBuilder {
 
         List<Map<String,String>> pluginFiles = new ArrayList<Map<String, String>>();
         Map<String, String> pluginMap = new HashMap<>();
-        pluginMap.put("pluginname", this.pluginID);
+        pluginMap.put("pluginname", this.getPluginID());
         pluginMap.put("jarfile", "fake.jar");
         pluginMap.put("md5", "DefinitelyRealMD5");
         pluginMap.put("version", "NO_VERSION");
@@ -92,7 +94,7 @@ public class PluginBuilder {
     }
 
     public String getPluginID() {
-        return pluginID;
+        return pluginConfig.getStringParam("pluginid");
     }
 }
 

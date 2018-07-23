@@ -51,7 +51,7 @@ public class DBBaseFunctions {
     public DBBaseFunctions(ControllerEngine controllerEngine, DBEngine dbe) {
         this.controllerEngine = controllerEngine;
         this.plugin = controllerEngine.getPluginBuilder();
-        this.logger = plugin.getLogger(DBBaseFunctions.class.getName(),CLogger.Level.Info);
+        this.logger = plugin.getLogger(DBBaseFunctions.class.getName(),CLogger.Level.Debug);
 
         //this.logger = new CLogger(DBBaseFunctions.class, agentcontroller.getMsgOutQueue(), agentcontroller.getRegion(), agentcontroller.getAgent(), agentcontroller.getPluginID(), CLogger.Level.Info);
         //this.agentcontroller = agentcontroller;
@@ -1055,6 +1055,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception.. this is normal
+            long threadId = Thread.currentThread().getId();
+            logger.debug("IaddNode: thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1154,6 +1156,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception
+            long threadId = Thread.currentThread().getId();
+            logger.debug("IaddIsReachableEdge : thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1215,6 +1219,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception
+            long threadId = Thread.currentThread().getId();
+            logger.debug("addEdge : thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1328,6 +1334,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception
+            long threadId = Thread.currentThread().getId();
+            logger.debug("removeNode : thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1407,6 +1415,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception.. this is normal
+            long threadId = Thread.currentThread().getId();
+            logger.debug("setINodeParams : thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1481,6 +1491,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception.. this is normal
+            long threadId = Thread.currentThread().getId();
+            logger.debug("setINodeParams: thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1558,6 +1570,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception.. this is normal
+            long threadId = Thread.currentThread().getId();
+            logger.debug("setINodeParams : thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1653,6 +1667,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception.. this is normal
+            long threadId = Thread.currentThread().getId();
+            logger.debug("setINodeParams : thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1723,6 +1739,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception.. this is normal
+            long threadId = Thread.currentThread().getId();
+            logger.debug("setIEdgeParams : thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1794,6 +1812,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception.. this is normal
+            long threadId = Thread.currentThread().getId();
+            logger.debug("setINodeParams : thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {
@@ -1882,6 +1902,8 @@ public class DBBaseFunctions {
         catch(com.orientechnologies.orient.core.exception.OConcurrentModificationException exc)
         {
             //eat exception.. this is normal
+            long threadId = Thread.currentThread().getId();
+            logger.debug("setINodeParams : thread_id: " + threadId + " ConcurrentModException " + exc.toString());
         }
         catch(Exception ex)
         {

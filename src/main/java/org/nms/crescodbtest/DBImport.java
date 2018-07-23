@@ -70,7 +70,7 @@ public class DBImport {
 
     public DBImport(ControllerEngine controllerEngine, final InputStream iStream, DBBaseFunctions gdb, ODatabaseDocumentTx db) throws IOException {
 
-        this.logger = controllerEngine.getPluginBuilder().getLogger(DBImport.class.getName(),CLogger.Level.Info);
+        this.logger = controllerEngine.getPluginBuilder().getLogger(DBImport.class.getName(),CLogger.Level.Debug);
 
         //this.logger = new CLogger(DBImport.class, agentcontroller.getMsgOutQueue(), agentcontroller.getRegion(), agentcontroller.getAgent(), agentcontroller.getPluginID(), CLogger.Level.Info);
         this.db = db;
