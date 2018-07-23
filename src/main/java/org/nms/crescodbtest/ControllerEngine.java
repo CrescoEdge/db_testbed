@@ -55,4 +55,8 @@ public class ControllerEngine {
     public PluginAdmin getPluginAdmin(){
         return this.pluginAdmin;
     }
+
+    public void setGDB(DBInterface gdb){
+        this.gdb = gdb;
+    }
 }

@@ -1,7 +1,7 @@
 package org.nms.crescodbtest;
 
 import com.google.gson.Gson;
-import io.cresco.agent.controller.agentcontroller.PluginNode;
+//import io.cresco.agent.controller.agentcontroller.PluginNode;
 import io.cresco.library.agent.AgentState;
 import io.cresco.library.messaging.MsgEvent;
 import io.cresco.library.plugin.PluginService;
@@ -68,7 +68,7 @@ public class PluginAdmin {
     public PluginAdmin() {
 
         this.gson = new Gson();
-        //this.configMap = Collections.synchronizedMap(new HashMap<>());
+        this.configMap = Collections.synchronizedMap(new HashMap<>());
         this.pluginMap = Collections.synchronizedMap(new HashMap<>());
 
     }
@@ -121,18 +121,7 @@ public class PluginAdmin {
         return  isStarted;
     }
 */
-    public void msgIn(MsgEvent msg) {
 
-        String pluginID = msg.getDstPlugin();
-        synchronized (lockPlugin) {
-            if (pluginMap.containsKey(pluginID)) {
-                if(pluginMap.get(pluginID).getActive()) {
-                    pluginMap.get(pluginID).getPluginService().inMsg(msg);
-                }
-            }
-        }
-
-    }
 
     public String addPlugin(String pluginName, String jarFile, Map<String,Object> map) {
         String returnPluginID = null;
@@ -144,13 +133,9 @@ public class PluginAdmin {
                                 pluginMap.put(pluginID, pluginNode);
                             }
                             returnPluginID = pluginID;
-
-
-
                         } else {
                             System.out.println("Could not create config for " + " pluginName " + pluginName + " no bundle " + jarFile);
                         }
-
             }
             catch (Exception ex) {
                 ex.printStackTrace();
@@ -178,7 +163,7 @@ public class PluginAdmin {
 
                         //properties.put("pluginID", pluginID);
                         //configuration.update(properties);
-
+                        map.put("pluginID",pluginID);
                         configMap.put(pluginID, map);
                         isEmpty = true;
                     }
@@ -253,8 +238,6 @@ public class PluginAdmin {
     }*/
 
     public String getPluginExport() {
-
-
         String exportString = null;
         try {
 
@@ -289,6 +272,11 @@ public class PluginAdmin {
         }
 
         return exportString;
+    }
+
+    //Not normally available, added for testbed
+    public Map<String,PluginNode> getPluginMap(){
+        return pluginMap;
     }
 
 }

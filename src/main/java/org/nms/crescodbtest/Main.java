@@ -16,7 +16,9 @@ public class Main {
         Map<String,String> params = new HashMap<>();
         params.put("region_name",region);
         params.put("agent_name",agent);
-        params.put("plugin_id",plugin);
+        if(plugin != null){
+            params.put("plugin_id",plugin);
+        }
         //The event type might not be right but it should be ok w.r.t. AddNode in DBInterface
         return new MsgEvent(MsgEvent.Type.CONFIG,region,agent,plugin,params);
     }
@@ -39,27 +41,21 @@ public class Main {
     }
     public static void main(String[] argv) {
         //Found this at https://stackoverflow.com/a/42860529
-        Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(Level.FINER));
-        LogManager.getLogManager().getLogger("").setLevel(Level.FINER);
+        Arrays.stream(LogManager.getLogManager().getLogger("").getHandlers()).forEach(h -> h.setLevel(Level.FINEST));
+        LogManager.getLogManager().getLogger("").setLevel(Level.FINEST);
 
         Map<String,Object> testConfig = getMockPluginConfig();
         testConfig.putAll(getGDBConfigMap(null,null,null,null));
         testConfig.put("db_retry_count","50");
-        PluginBuilder mypb = new PluginBuilder(null,"testregion",null
-                ,"TestBase",testConfig);
-        ControllerEngine parent_ce = new ControllerEngine(mypb);
-                //ControllerEngine.getGDB
-                //getStringFromError
-                //getAppScheduleQueue
-                //getKPIProducer
-                //setDBManagerActive
-
-        //getPluginBuilder().getGlobalPluginMsgEvent
-        //getPluginBuilder().sendRPC
-        //getPluginBuilder().getLogger
-        //getPluginBuilder().get ??
+        PluginBuilder mypb = new PluginBuilder("global_controller","some_region","Main",testConfig);
+        PluginAdmin mypluginAdmin = new PluginAdmin();
+        mypluginAdmin.addPlugin("some_plugin","some_plugin.jar",testConfig);
+        ControllerEngine parent_ce = new ControllerEngine(mypb,mypluginAdmin);
         parent_ce.startGDB();
-        Thread global_controller = new Thread(new AgentProcess(0,parent_ce,"some_region","global_controller"));
+        for(String pluginid: mypluginAdmin.getPluginMap().keySet()){
+            parent_ce.getGDB().addNode(Main.buildAddNodeMsg(mypb.getRegion(),mypb.getAgent(),pluginid));
+        }
+        Thread global_controller = new Thread(new AgentProcess(0,parent_ce,null));
         global_controller.start();
         //MsgEvent m = buildAddNodeMsg("some_region","global_ctrl_agent","some_plugin");
         //parent_ce.getGDB().addNode(m);
@@ -70,17 +66,28 @@ public class Main {
             int numberOfAgents = argv != null ? Integer.parseInt(argv[0]) : 1;
             long agentLifetime = 0;
             for(int i = 0;i < numberOfAgents;i++) {
-                Thread otherAgentProcess = new Thread(new AgentProcess(agentLifetime,parent_ce,"some_region","agent-"+i));
+                PluginBuilder child_pluginBuilder = new PluginBuilder("agent-"+i,"some_region","AgentProcess",testConfig);
+                PluginAdmin child_pluginAdmin = new PluginAdmin();
+                child_pluginAdmin.addPlugin("some_plugin","some_plugin.jar",testConfig);
+                ControllerEngine child_ce = new ControllerEngine(child_pluginBuilder,child_pluginAdmin);
+                child_ce.setGDB(parent_ce.getGDB());
+                for(String pluginid: child_pluginAdmin.getPluginMap().keySet()){
+                    child_ce.getGDB().addNode(Main.buildAddNodeMsg(child_pluginBuilder.getRegion()
+                    ,child_pluginBuilder.getAgent()
+                    ,pluginid));
+                }
+                Thread otherAgentProcess = new Thread(new AgentProcess(agentLifetime,child_ce,parent_ce));
                 otherAgentProcess.start();
-                //Thread.sleep(500);
+                Thread.sleep(500);//stagger start times to increase concurrency pain
             }
             while(true){
-                    Thread.sleep(2000);
+                    //Thread.sleep(2000);
                     //System.out.println(parent_ce.getGDB().getAgentList("some_region"));
             }
         }
-        catch(InterruptedException ex) {
-            System.err.println("Caught InterruptedException");
+        catch(Exception ex) {
+            System.err.println("Caught Exception!");
+            ex.printStackTrace();
         }
     }
 }
@@ -88,14 +95,16 @@ class AgentProcess implements Runnable {
     private ControllerEngine ce;
     private String region;
     private String agent;
-    private final String plugin_id ="some_plugin";
     private PluginBuilder plugin;
     private long lifetimems;
+    private String jsonExport;
+    private ControllerEngine parent_ce;
 
-    public AgentProcess(long lifetimems, ControllerEngine ce, String region, String agent) {
+    public AgentProcess(long lifetimems, ControllerEngine ce, ControllerEngine parent_ce) {
         this.ce = ce;
-        this.region = region;
-        this.agent = agent;
+        this.region = ce.getPluginBuilder().getRegion();
+        this.agent = ce.getPluginBuilder().getAgent();
+        this.parent_ce = parent_ce;
         Map<String,Object> pluginConf = Main.getMockPluginConfig();
         String gdb_host = ce.getPluginBuilder().getConfig().getStringParam("gdb_host");
         String gdb_username = ce.getPluginBuilder().getConfig().getStringParam("gdb_username");
@@ -105,45 +114,48 @@ class AgentProcess implements Runnable {
             Map<String, Object> gdbConf = Main.getGDBConfigMap(gdb_host, gdb_username, gdb_password, gdb_dbname);
             pluginConf.putAll(gdbConf);
         }
-        this.plugin = new PluginBuilder(agent,region,plugin_id,"Some_Base_Class"
-                ,pluginConf);
+        this.plugin = ce.getPluginBuilder();
         this.lifetimems = lifetimems;
     }
 
     public void reportToConsole(String msg){
-        System.out.println("TS "+System.currentTimeMillis()+"[Region: "+region+" Agent:"+agent+" Plugin:"+plugin_id+"] - "+msg);
+        System.out.println("TS "+System.currentTimeMillis()+"[Region: "+region+" Agent:"+agent+" Plugin:"+ce.getPluginBuilder().getPluginID()+"] - "+msg);
     }
 
     public void doSomeStuff() throws InterruptedException {
+        simulatedPluginChanges();
         Thread.sleep(5000);
-        if(agent != "global_controller"){
-            simulatedWDUpdate();
-        }
-        //reportToConsole(ce.getGDB().getAgentList(region));
-        //ce.getGDB().getAgentList(region);
+        simulatedWDUpdate(ce);
     }
 
-    public void simulatedWDUpdate(){
-
+    public void simulatedPluginChanges(){
+        Double rand = Math.random();
+        if(rand <= 0.333){
+            ce.getPluginAdmin().addPlugin("random_plugin_"+rand,"random_plugin.jar",new HashMap<>());
+            reportToConsole("Added random plugin 'random_plugin_"+rand+"'");
+        } else {
+            //Do nothing for now. Might eventually make this remove plugins?
+        }
+    }
+    public void simulatedWDUpdate(ControllerEngine ce){
         MsgEvent le = plugin.getRegionalControllerMsgEvent(MsgEvent.Type.WATCHDOG);
-
         le.setParam("desc","to-rc-agent");
         le.setParam("region_name",plugin.getRegion());
         le.setParam("agent_name",plugin.getAgent());
-
-
         String tmpJsonExport = ce.getPluginAdmin().getPluginExport();
-        if(!jsonExport.equals(tmpJsonExport)) {
+        if(jsonExport == null || !jsonExport.equals(tmpJsonExport)) {
 
             jsonExport = tmpJsonExport;
             le.setCompressedParam("pluginconfigs", jsonExport);
         }
+        ce.getGDB().watchDogUpdate(le);
     }
 
     public void run() {
         try {
-            MsgEvent m = Main.buildAddNodeMsg(region, agent,plugin_id);
-            ce.getGDB().addNode(m);
+                //MsgEvent m = Main.buildAddNodeMsg(region, agent,null);
+                //ce.getGDB().addNode(m);
+
             //m = Main.buildAddNodeMsg(region,agent,"some_plugin");
             //ce.getGDB().addNode(m);
             long starting_ts = System.currentTimeMillis();
@@ -158,9 +170,10 @@ class AgentProcess implements Runnable {
         }
         catch (Exception ex){
             System.out.println("Caught exception "+ex);
+            ex.printStackTrace();
         }
         finally {
-            ce.getGDB().removeNode(region,agent,null);
+            //ce.getGDB().removeNode(region,agent,null);
         }
     }
 }
