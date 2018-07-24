@@ -19,7 +19,22 @@ class TestAgent extends AgentProcess {
     }
     public void doSomeStuff(){
         try {
-            
+            /*MsgEvent add_remove_msg = DBTestHelpers.buildAddNodeMsg("test_region","test_agent","test_plugin");
+            getCe().getGDB().addNode(add_remove_msg);
+            Thread.sleep(500);
+            Optional<String> node_id = Optional.of(getCe().getGDB().gdb.getNodeId("test_region","test_agent","test_plugin"));
+            if(node_id.isPresent()) {
+                getCe().getGDB().removeNode(add_remove_msg);
+            }*/
+
+            //this.simulatedWDUpdate();
+            DBBaseFunctions gdb = getCe().getGDB().gdb;
+            String node_id = gdb.getNodeId("test_region", "test_agent", "test_plugin");
+            if (node_id == null) {
+                gdb.addNode("test_region", "test_agent", "test_plugin");
+                node_id = gdb.getNodeId("test_region", "test_agent", "test_plugin");
+            }
+            gdb.setNodeParam(node_id,"test_param_key","test_param_value");
         }
         catch(Exception ex){
             getAgentLogger().log(Level.SEVERE,"Exception in 'doSomeStuff' of thread "+Thread.currentThread().getId(),ex);
@@ -45,6 +60,8 @@ public class Main {
                 ,testConfig,Optional.empty());
 
         Thread global_controller = new Thread(new TestAgent(0,parent_ce));
+        global_controller.start();
+
         try{
             int numberOfAgents = argv != null ? Integer.parseInt(argv[0]) : 1;
             long agentLifetime = 0;
@@ -57,8 +74,7 @@ public class Main {
                 Thread.sleep(100);//stagger start times to increase concurrency pain
             }
             while(true){
-                    //Thread.sleep(2000);
-                    //System.out.println(parent_ce.getGDB().getAgentList("some_region"));
+                    //sit and spin
             }
         }
         catch(Exception ex) {

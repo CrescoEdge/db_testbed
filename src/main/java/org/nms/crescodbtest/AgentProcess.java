@@ -69,8 +69,6 @@ abstract class AgentProcess implements Runnable {
 
     public void run() {
         try {
-                //MsgEvent m = Main.buildAddNodeMsg(region, agent,null);
-                //ce.getGDB().addNode(m);
             long starting_ts = System.currentTimeMillis();
             if(lifetimems > 0){
                 while( (System.currentTimeMillis() - starting_ts) < lifetimems)
@@ -85,14 +83,16 @@ abstract class AgentProcess implements Runnable {
             System.out.println("Caught exception "+ex);
             ex.printStackTrace();
         }
-        finally {
-            //ce.getGDB().removeNode(region,agent,null);
-        }
     }
+
     public Logger getAgentLogger(){
         return agentLogger;
     }
     public void setAgentLogger(Logger to_set){
         agentLogger = to_set;
+    }
+
+    public ControllerEngine getCe() {
+        return ce;
     }
 }
