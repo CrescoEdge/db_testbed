@@ -19,8 +19,8 @@ public class PluginAdmin {
 
     private Gson gson;
 
-    private int PLUGINLIMIT = 900;
-    private int TRYCOUNT = 30;
+    //private int PLUGINLIMIT = 900;
+    //private int TRYCOUNT = 30;
 
 
     private Map<String,Object> configMap;
@@ -30,7 +30,7 @@ public class PluginAdmin {
     private AtomicBoolean lockPlugin = new AtomicBoolean();
 
 
-    private AgentState agentState;
+    //private AgentState agentState;
 
     /*public int pluginCount() {
 

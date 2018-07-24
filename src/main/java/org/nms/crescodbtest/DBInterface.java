@@ -38,7 +38,7 @@ public class DBInterface {
     public DBInterface(ControllerEngine controllerEngine) {
         this.controllerEngine = controllerEngine;
         this.plugin = controllerEngine.getPluginBuilder();
-        this.logger = plugin.getLogger(DBInterface.class.getName(),CLogger.Level.Trace);
+        this.logger = plugin.getLogger(DBInterface.class.getName(),CLogger.Level.Debug);
 
         //this.logger = new CLogger(DBInterface.class, agentcontroller.getMsgOutQueue(), agentcontroller.getRegion(), agentcontroller.getAgent(), agentcontroller.getPluginID(), CLogger.Level.Info);
         //this.agentcontroller = agentcontroller;
