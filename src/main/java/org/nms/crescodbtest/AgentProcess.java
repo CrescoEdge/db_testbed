@@ -3,34 +3,36 @@ package org.nms.crescodbtest;
 import io.cresco.library.messaging.MsgEvent;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
-class AgentProcess implements Runnable {
+abstract class AgentProcess implements Runnable {
     private ControllerEngine ce;
     private String region;
     private String agent;
     private PluginBuilder plugin;
     private long lifetimems;
     private String jsonExport;
-    private ControllerEngine parent_ce;
+    private Runnable thing_to_do;
+    private Logger agentLogger;
 
-    public AgentProcess(long lifetimems, ControllerEngine ce, ControllerEngine parent_ce) {
+    public AgentProcess(long lifetimems, ControllerEngine ce) {
         this.ce = ce;
         this.region = ce.getPluginBuilder().getRegion();
         this.agent = ce.getPluginBuilder().getAgent();
-        this.parent_ce = parent_ce;
+        //this.parent_ce = parent_ce;
         this.plugin = ce.getPluginBuilder();
         this.lifetimems = lifetimems;
+        agentLogger = Logger.getLogger("AgentProcess");
     }
 
     public void reportToConsole(String msg){
-        System.out.println("TS "+System.currentTimeMillis()+"[Region: "+region+" Agent:"+agent+"] - "+msg);
+        agentLogger.info("Thread "+Thread.currentThread().getId()
+                +"TS "+System.currentTimeMillis()
+                +"[Region: "+region+" Agent:"+agent+"] - "
+                +msg);
     }
 
-    public void doSomeStuff() throws InterruptedException {
-        simulatedPluginChanges();
-        Thread.sleep(1000);
-        simulatedWDUpdate(ce);
-    }
+    abstract public void doSomeStuff();
 
     public void simulatedPluginChanges(){
         Double rand = Math.random();
@@ -51,7 +53,7 @@ class AgentProcess implements Runnable {
             //do nothing
         }
     }
-    public void simulatedWDUpdate(ControllerEngine ce){
+    public void simulatedWDUpdate(){
         MsgEvent le = plugin.getRegionalControllerMsgEvent(MsgEvent.Type.WATCHDOG);
         le.setParam("desc","to-rc-agent");
         le.setParam("region_name",plugin.getRegion());
@@ -86,5 +88,11 @@ class AgentProcess implements Runnable {
         finally {
             //ce.getGDB().removeNode(region,agent,null);
         }
+    }
+    public Logger getAgentLogger(){
+        return agentLogger;
+    }
+    public void setAgentLogger(Logger to_set){
+        agentLogger = to_set;
     }
 }
